@@ -30,8 +30,8 @@ import (
 	"github.com/prometheus/common/log"
 	"github.com/prometheus/common/version"
 
-	"github.com/prometheus/pushgateway/handler"
-	"github.com/prometheus/pushgateway/storage"
+	"github.com/monzo/pushgateway/handler"
+	"github.com/monzo/pushgateway/storage"
 )
 
 var (
@@ -67,6 +67,9 @@ func main() {
 	// prometheus.EnableCollectChecks(true)
 
 	r := httprouter.New()
+	r.Handler("GET", "/-/healthy", prometheus.InstrumentHandlerFunc("healthy", handler.Healthy(ms)))
+	r.Handler("GET", "/-/ready", prometheus.InstrumentHandlerFunc("ready", handler.Ready(ms)))
+
 	r.Handler("GET", *metricsPath, prometheus.Handler())
 
 	// Handlers for pushing and deleting metrics.
